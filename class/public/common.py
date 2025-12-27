@@ -754,7 +754,7 @@ def GetConfigValue(key):
     config = GetConfig()
     if not config:
         config = {"product": "Linux panel", "setup_path": "/www/server", "openlitespeed_path": "/usr/local",
-         "language": "English", "title": "aaPanel Linux panel", "brand": "aaPanel", "root_path": "/www",
+         "language": "English", "title": "Sasto Panel", "brand": "Sasto Panel", "root_path": "/www",
          "template": "default", "logs_path": "/www/wwwlogs", "home": "https://www.aapanel.com", "recycle_bin": True}
         writeFile('/www/server/panel/config/config.json',json.dumps(config))
     if not key in config.keys():
@@ -4617,75 +4617,10 @@ def get_pd(args=None):
         @param args:
         @return tuple[html, pro, ltd]
     """
-    from BTPanel import cache
-
-    # 专业版到期时间 -1.过期 0.永久授权 >0.到期时间
-    pro = -1
-
-    # 企业版到期时间 -1.过期 0.永久授权 >0.到期时间
-    ltd = -1
-
-    # HTML文本
-    htm = '<span class="btpro-free" onclick="bt.soft.renew_pro()" title="Click to get PRO">FREE</span>'
-
-    try:
-        # 获取当前时间
-        cur_time = int(time.time())
-
-        p_token = cache.get('p_token')
-
-        if p_token is None:
-            p_token = 'bmac_' + Md5(get_mac_address())
-            cache.set('p_token', p_token)
-
-        tmp_f = '/tmp/' + p_token
-        p_token_time_f = '/tmp/{}.time'.format(p_token)
-
-        # 检查缓存是否失效
-        if not os.path.exists(tmp_f) or not os.path.exists(p_token_time_f) or int(readFile(p_token_time_f).strip()) + 86400 <= cur_time:
-            # 检查用户是否登录，登录后才获取授权信息
-            userinfo_f = '{}/data/userInfo.json'.format(get_panel_path())
-            if os.path.exists(userinfo_f) and os.path.getsize(userinfo_f) > 10:
-                # 缓存失效时重新获取授权信息
-                plugin_list = load_soft_list()
-
-                if isinstance(plugin_list, dict):
-                    pro = plugin_list.get('pro', -1)
-                    # ltd = plugin_list.get('ltd', -1)
-
-                    writeFile(tmp_f, str(pro), 'w')
-                    writeFile(p_token_time_f, str(cur_time), 'w')
-
-        tmp = readFile(tmp_f)
-        if tmp:
-            pro = int(tmp)
-
-        if ltd < 1:
-            if ltd == -2:
-                htm = '<span class="btltd-gray"><span style="color: #fc6d26;font-weight: bold;margin-right:5px">EXPIRED</span><a class="btlink" onclick="bt.soft.updata_ltd()">RENEW</a></span>'
-            elif pro == -1:
-                htm = '<span class="btpro-free" onclick="bt.soft.renew_pro()" title="Click to get PRO">FREE</span>'
-            elif pro == -2:
-                htm = '<span class="btpro-gray"><span style="color: #fc6d26;font-weight: bold;margin-right:5px">EXPIRED</span><a class="btlink" onclick="bt.soft.renew_pro()">RENEW</a></span>'
-            if pro >= 0 and ltd in [-1, -2]:
-                if pro == 0:
-                    tmp2 = 'Lifetime'
-                    htm = '<span class="btpro">Expire:<span style="color: #fc6d26;font-weight: bold;">{0}</span></span>'.format(
-                        tmp2)
-                else:
-                    tmp2 = time.strftime('%Y-%m-%d', time.localtime(pro))
-                    htm = '<span class="btpro">Expire: <span style="color: #fc6d26;font-weight: bold;margin-right:5px">{0}</span><a class="btlink" onclick="bt.soft.renew_pro()">RENEW</a></span>'.format(
-                        tmp2)
-            else:
-                htm = '<span class="btpro-gray" onclick="bt.soft.updata_pro()" title="Click to get PRO">FREE</span>'
-        else:
-            htm = '<span class="btltd">Expire: <span style="color: #fc6d26;font-weight: bold;margin-right:5px">{}</span><a class="btlink" onclick="bt.soft.renew_pro()">RENEW</a></span>'.format(
-                time.strftime('%Y-%m-%d', time.localtime(ltd)))
-
-    except:
-        from traceback import format_exc
-        print_log(format_exc())
-
+    # Force Lifetime Pro and Enterprise
+    pro = 0
+    ltd = 0
+    htm = '<span class="btpro">Expire:<span style="color: #fc6d26;font-weight: bold;">Lifetime</span></span>'
     return htm, pro, ltd
 
 

@@ -3305,67 +3305,7 @@ var index = {
 	 * @description 推荐进阶版产品
 	 */
 	recommend_paid_version: function () {
-		try {
-			var recomConfig = product_recommend.get_recommend_type(0);
-			var pay_status = product_recommend.get_pay_status();
-			var is_pay = pay_status.is_pay;
-			var advanced = pay_status.advanced;
-			var end_time = pay_status.end_time;
-			var html = '',
-				list_html = '';
-			if (!is_pay) advanced = ''; //未购买的时候，使用推荐内容
-			if (recomConfig) {
-				var item = recomConfig;
-				for (let j = 0; j < item['ps'].length; j++) {
-					const element = item['ps'][j];
-					list_html += '<div class="item">' + element + '</div>';
-				}
-				var pay_html = '';
-				if (is_pay) {
-					pay_html =
-						'<div class="product-buy ' +
-						(advanced || item.name) +
-						'-type">Expired: <span>' +
-						(end_time === 0
-							? 'Lifetime'
-							: (end_time === -2 ? 'Expired' : bt.format_data(end_time, 'yyyy-MM-dd')) +
-							  '&nbsp;&nbsp;<a class="btlink" href="javascript:;" onclick="product_recommend.pay_product_sign(\'' +
-							  advanced +
-							  "'," +
-							  item.pay +
-							  ')">Renew</a>') +
-						'</span></div>';
-				} else {
-					pay_html =
-						'<div class="product-buy"><button type="button" class="btn btn-xs btn-success" onclick="product_recommend.pay_product_sign(\'' +
-						(advanced || item.name) +
-						"'," +
-						item.pay +
-						')">Buy now</button></div>';
-				}
-				html =
-					'<div class="conter-box bgw">\
-          <div class="recommend-top pd15 ' +
-					(is_pay ? advanced + '-bg' : '') +
-					'">' +
-					(!is_pay ? pay_html : '') +
-					'<div class="product-ico ' +
-					(advanced || item.name) +
-					'' +
-					(!is_pay ? '-pay' : '') +
-					'-ico"></div>' +
-					(is_pay ? pay_html : '') +
-					'\
-            <div class="product-label">' +
-					list_html +
-					'</div>\
-          </div>\
-        </div>';
-				$('#home-recommend').html(html);
-			}
-		} catch (error) {
-			console.log(error);
-		}
+		$('#home-recommend').hide();
 	},
 };
 index.get_init();
